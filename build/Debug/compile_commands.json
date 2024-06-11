@@ -1,12 +1,6 @@
 [
 {
   "directory": "C:/Users/Lingl/Desktop/Quadcoptor/test/L4/build/Debug",
-  "command": "C:\\PROGRA~2\\GNUARM~1\\102021~1.10\\bin\\AR19DD~1.EXE -DDEBUG -DSTM32L475xx -DUSE_HAL_DRIVER -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/GwLib/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/Hardware/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Core/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/STM32L4xx_HAL_Driver/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32L4xx/Include -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/CMSIS/Include  -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -g -std=gnu11 -o CMakeFiles\\L4.dir\\GwLib\\Src\\anotc.c.obj -c C:\\Users\\Lingl\\Desktop\\Quadcoptor\\test\\L4\\GwLib\\Src\\anotc.c",
-  "file": "C:\\Users\\Lingl\\Desktop\\Quadcoptor\\test\\L4\\GwLib\\Src\\anotc.c",
-  "output": "CMakeFiles\\L4.dir\\GwLib\\Src\\anotc.c.obj"
-},
-{
-  "directory": "C:/Users/Lingl/Desktop/Quadcoptor/test/L4/build/Debug",
   "command": "C:\\PROGRA~2\\GNUARM~1\\102021~1.10\\bin\\AR19DD~1.EXE -DDEBUG -DSTM32L475xx -DUSE_HAL_DRIVER -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/GwLib/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/Hardware/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Core/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/STM32L4xx_HAL_Driver/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32L4xx/Include -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/CMSIS/Include  -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -g -std=gnu11 -o CMakeFiles\\L4.dir\\GwLib\\Src\\i2c.c.obj -c C:\\Users\\Lingl\\Desktop\\Quadcoptor\\test\\L4\\GwLib\\Src\\i2c.c",
   "file": "C:\\Users\\Lingl\\Desktop\\Quadcoptor\\test\\L4\\GwLib\\Src\\i2c.c",
   "output": "CMakeFiles\\L4.dir\\GwLib\\Src\\i2c.c.obj"
@@ -25,15 +19,33 @@
 },
 {
   "directory": "C:/Users/Lingl/Desktop/Quadcoptor/test/L4/build/Debug",
+  "command": "C:\\PROGRA~2\\GNUARM~1\\102021~1.10\\bin\\AR19DD~1.EXE -DDEBUG -DSTM32L475xx -DUSE_HAL_DRIVER -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/GwLib/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/Hardware/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Core/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/STM32L4xx_HAL_Driver/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32L4xx/Include -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/CMSIS/Include  -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -g -std=gnu11 -o CMakeFiles\\L4.dir\\Hardware\\Src\\anotc.c.obj -c C:\\Users\\Lingl\\Desktop\\Quadcoptor\\test\\L4\\Hardware\\Src\\anotc.c",
+  "file": "C:\\Users\\Lingl\\Desktop\\Quadcoptor\\test\\L4\\Hardware\\Src\\anotc.c",
+  "output": "CMakeFiles\\L4.dir\\Hardware\\Src\\anotc.c.obj"
+},
+{
+  "directory": "C:/Users/Lingl/Desktop/Quadcoptor/test/L4/build/Debug",
   "command": "C:\\PROGRA~2\\GNUARM~1\\102021~1.10\\bin\\AR19DD~1.EXE -DDEBUG -DSTM32L475xx -DUSE_HAL_DRIVER -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/GwLib/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/Hardware/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Core/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/STM32L4xx_HAL_Driver/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32L4xx/Include -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/CMSIS/Include  -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -g -std=gnu11 -o CMakeFiles\\L4.dir\\Hardware\\Src\\icm20608.c.obj -c C:\\Users\\Lingl\\Desktop\\Quadcoptor\\test\\L4\\Hardware\\Src\\icm20608.c",
   "file": "C:\\Users\\Lingl\\Desktop\\Quadcoptor\\test\\L4\\Hardware\\Src\\icm20608.c",
   "output": "CMakeFiles\\L4.dir\\Hardware\\Src\\icm20608.c.obj"
 },
 {
   "directory": "C:/Users/Lingl/Desktop/Quadcoptor/test/L4/build/Debug",
+  "command": "C:\\PROGRA~2\\GNUARM~1\\102021~1.10\\bin\\AR19DD~1.EXE -DDEBUG -DSTM32L475xx -DUSE_HAL_DRIVER -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/GwLib/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/Hardware/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Core/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/STM32L4xx_HAL_Driver/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32L4xx/Include -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/CMSIS/Include  -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -g -std=gnu11 -o CMakeFiles\\L4.dir\\Hardware\\Src\\imu.c.obj -c C:\\Users\\Lingl\\Desktop\\Quadcoptor\\test\\L4\\Hardware\\Src\\imu.c",
+  "file": "C:\\Users\\Lingl\\Desktop\\Quadcoptor\\test\\L4\\Hardware\\Src\\imu.c",
+  "output": "CMakeFiles\\L4.dir\\Hardware\\Src\\imu.c.obj"
+},
+{
+  "directory": "C:/Users/Lingl/Desktop/Quadcoptor/test/L4/build/Debug",
   "command": "C:\\PROGRA~2\\GNUARM~1\\102021~1.10\\bin\\AR19DD~1.EXE -DDEBUG -DSTM32L475xx -DUSE_HAL_DRIVER -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/GwLib/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/Hardware/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Core/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/STM32L4xx_HAL_Driver/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32L4xx/Include -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/CMSIS/Include  -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -g -std=gnu11 -o CMakeFiles\\L4.dir\\Hardware\\Src\\led.c.obj -c C:\\Users\\Lingl\\Desktop\\Quadcoptor\\test\\L4\\Hardware\\Src\\led.c",
   "file": "C:\\Users\\Lingl\\Desktop\\Quadcoptor\\test\\L4\\Hardware\\Src\\led.c",
   "output": "CMakeFiles\\L4.dir\\Hardware\\Src\\led.c.obj"
+},
+{
+  "directory": "C:/Users/Lingl/Desktop/Quadcoptor/test/L4/build/Debug",
+  "command": "C:\\PROGRA~2\\GNUARM~1\\102021~1.10\\bin\\AR19DD~1.EXE -DDEBUG -DSTM32L475xx -DUSE_HAL_DRIVER -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/GwLib/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/Hardware/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Core/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/STM32L4xx_HAL_Driver/Inc -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32L4xx/Include -IC:/Users/Lingl/Desktop/Quadcoptor/test/L4/cmake/stm32cubemx/../../Drivers/CMSIS/Include  -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -Wextra -Wpedantic -fdata-sections -ffunction-sections -O0 -g3 -g -std=gnu11 -o CMakeFiles\\L4.dir\\Hardware\\Src\\state.c.obj -c C:\\Users\\Lingl\\Desktop\\Quadcoptor\\test\\L4\\Hardware\\Src\\state.c",
+  "file": "C:\\Users\\Lingl\\Desktop\\Quadcoptor\\test\\L4\\Hardware\\Src\\state.c",
+  "output": "CMakeFiles\\L4.dir\\Hardware\\Src\\state.c.obj"
 },
 {
   "directory": "C:/Users/Lingl/Desktop/Quadcoptor/test/L4/build/Debug",

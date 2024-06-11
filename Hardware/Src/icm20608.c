@@ -153,7 +153,7 @@ HAL_StatusTypeDef MPU_Get_And_Filter(void) {
   MPU6050.Accel.Z = (uint16_t)kalman.Z.Out;
   // 对角速度进行一阶低通滤波
   const float factor = 0.15f;
-  static MPU6050_Vector3 localGyro;
+  static GW_Vector3i localGyro;
   MPU6050.Gyro.X = localGyro.X =
       localGyro.X * (1 - factor) + MPU6050.Gyro.X * factor;
   MPU6050.Gyro.Y = localGyro.Y =
@@ -168,8 +168,8 @@ HAL_StatusTypeDef MPU_Get_And_Filter(void) {
 HAL_StatusTypeDef MPU_Reset(void) {
   const int16_t MAX_GYRO_VALUE = 5;
   const int16_t MIN_GYRO_VALUE = -5;
-  MPU6050_Vector3 lastGyro = {0};
-  MPU6050_Vector3 erroGyro;
+  GW_Vector3i lastGyro = {0};
+  GW_Vector3i erroGyro;
   MPU6050.Accel_Offset.X = 0;
   MPU6050.Accel_Offset.Y = 8192;
   MPU6050.Accel_Offset.Z = 0;

@@ -48,12 +48,14 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
-    GwLib/Src/anotc.c
     GwLib/Src/i2c.c
     GwLib/Src/kalman.c
     GwLib/Src/pid.c
+    Hardware/Src/anotc.c
     Hardware/Src/icm20608.c
+    Hardware/Src/imu.c
     Hardware/Src/led.c
+    Hardware/Src/state.c
 )
 
 # Add include paths

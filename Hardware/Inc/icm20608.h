@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 
+#include "gwtypes.h"
 #include "kalman.h"
 #include "main.h"
 
@@ -74,23 +75,17 @@ extern "C" {
 #define MPU_ADDR 0x68              //(AD0==GND)?0x68:0x69
 
 typedef struct {
-  int16_t X;
-  int16_t Y;
-  int16_t Z;
-} MPU6050_Vector3;
-
-typedef struct {
   GW_Kalman_State_Type X;
   GW_Kalman_State_Type Y;
   GW_Kalman_State_Type Z;
 } MPU6050_Kalman_Type;
 
 typedef struct {
-  MPU6050_Vector3 Gyro;          // 陀螺仪
-  MPU6050_Vector3 Accel;         // 加速度计
-  MPU6050_Vector3 Accel_Offset;  // 加速度计的偏移量
-  MPU6050_Vector3 Gyro_Offset;   // 陀螺仪的偏移量
-  MPU6050_Kalman_Type Kalman;    // 卡尔曼滤波器
+  GW_Vector3i Gyro;             // 陀螺仪
+  GW_Vector3i Accel;            // 加速度计
+  GW_Vector3i Accel_Offset;     // 加速度计的偏移量
+  GW_Vector3i Gyro_Offset;      // 陀螺仪的偏移量
+  MPU6050_Kalman_Type Kalman;  // 卡尔曼滤波器
 } MPU6050_State_Type;
 
 extern MPU6050_State_Type MPU6050;
