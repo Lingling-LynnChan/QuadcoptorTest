@@ -1,6 +1,7 @@
 #include "anotc.h"
 #include <string.h>
 #include "icm20608.h"
+#include "imu.h"
 #include "usart.h"
 // PID校验
 int16_t ANOTC_Check_PID;
@@ -89,7 +90,7 @@ void ANOTC_Send(ANOTC_Msg_Type type) {
   uint8_t i;
   uint8_t len = 2;
   int16_t ANOTC_Buffer[12];
-  int8_t* pt = (int8_t*)(ANOTC_Buffer);
+  uint8_t* pt = (uint8_t*)(ANOTC_Buffer);
   GW_PID_State_Type* PID_X = NULL;
   GW_PID_State_Type* PID_Y = NULL;
   GW_PID_State_Type* PID_Z = NULL;
@@ -151,12 +152,12 @@ void ANOTC_Send(ANOTC_Msg_Type type) {
       break;
     case ANOTC_SENSER:
       MPU_Get_And_Filter();
-      ANOTC_Buffer[2] = MPU6050.Accel.X;
-      ANOTC_Buffer[3] = MPU6050.Accel.Y;
-      ANOTC_Buffer[4] = MPU6050.Accel.Z;
-      ANOTC_Buffer[5] = MPU6050.Gyro.X;
-      ANOTC_Buffer[6] = MPU6050.Gyro.Y;
-      ANOTC_Buffer[7] = MPU6050.Gyro.Z;
+      ANOTC_Buffer[2] = GWS_MPU6050.Accel.X;
+      ANOTC_Buffer[3] = GWS_MPU6050.Accel.Y;
+      ANOTC_Buffer[4] = GWS_MPU6050.Accel.Z;
+      ANOTC_Buffer[5] = GWS_MPU6050.Gyro.X;
+      ANOTC_Buffer[6] = GWS_MPU6050.Gyro.Y;
+      ANOTC_Buffer[7] = GWS_MPU6050.Gyro.Z;
       ANOTC_Buffer[8] = 0;   // 磁力计X
       ANOTC_Buffer[9] = 0;   // 磁力计Y
       ANOTC_Buffer[10] = 0;  // 磁力计Z
@@ -165,16 +166,15 @@ void ANOTC_Send(ANOTC_Msg_Type type) {
     case ANOTC_SENSER2:
       break;
     case ANOTC_STATUS:
-      ANOTC_Buffer[2] = (int16_t)(Angle.roll * 100);
-      ANOTC_Buffer[3] = (int16_t)(Angle.pitch * 100);
-      ANOTC_Buffer[4] = -(int16_t)(Angle.yaw * 100);
+      ANOTC_Buffer[2] = (int16_t)(GWS_IMU_Angle.Roll * 100);
+      ANOTC_Buffer[3] = (int16_t)(GWS_IMU_Angle.Pitch * 100);
+      ANOTC_Buffer[4] = -(int16_t)(GWS_IMU_Angle.Yaw * 100);
       ((int32_t*)&ANOTC_Buffer[5])[0] = 0;                  // 高度数据
       ((uint8_t*)&ANOTC_Buffer[7])[0] = GWS_FLY_MODE_NONE;  // 飞行模式
       ((uint8_t*)&ANOTC_Buffer[7])[1] = GWS_FLY_LOCK;       // 解锁信息
       len = 12;
       break;
     case ANOTC_POWER:
-
       break;
     case ANOTC_CHECK:
       ANOTC_Buffer[2] = ANOTC_Check_PID;
@@ -183,7 +183,7 @@ void ANOTC_Send(ANOTC_Msg_Type type) {
     default:
       break;
   }
-  ANOTC_Buffer[0] = 0XAAAA;
+  ANOTC_Buffer[0] = (int16_t)0xAAAA;
   ANOTC_Buffer[1] = len | type << 8;
   pt[len + 4] = (int8_t)(0xAA + 0xAA);
   for (i = 2; i < len + 4; i += 2) {

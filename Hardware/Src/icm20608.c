@@ -2,8 +2,6 @@
 #include "i2c.h"
 #include "string.h"
 
-MPU6050_State_Type MPU6050 = {0};
-
 /**
  * @brief 初始化ICM20608
  */
@@ -111,9 +109,9 @@ HAL_StatusTypeDef MPU_Get_Gyro(void) {
   if (state != HAL_OK) {
     return state;
   }
-  MPU6050.Gyro.X = (((uint16_t)buf[0] << 8) | buf[1]) - MPU6050.Gyro_Offset.X;
-  MPU6050.Gyro.Y = (((uint16_t)buf[2] << 8) | buf[3]) - MPU6050.Gyro_Offset.Y;
-  MPU6050.Gyro.Z = (((uint16_t)buf[4] << 8) | buf[5]) - MPU6050.Gyro_Offset.Z;
+  GWS_MPU6050.Gyro.X = (((uint16_t)buf[0] << 8) | buf[1]) - GWS_MPU6050.Gyro_Offset.X;
+  GWS_MPU6050.Gyro.Y = (((uint16_t)buf[2] << 8) | buf[3]) - GWS_MPU6050.Gyro_Offset.Y;
+  GWS_MPU6050.Gyro.Z = (((uint16_t)buf[4] << 8) | buf[5]) - GWS_MPU6050.Gyro_Offset.Z;
   return HAL_OK;
 }
 /**
@@ -126,9 +124,9 @@ HAL_StatusTypeDef MPU_Get_Accel(void) {
   if (state != HAL_OK) {
     return state;
   }
-  MPU6050.Accel.X = (((uint16_t)buf[0] << 8) | buf[1]) - MPU6050.Accel_Offset.X;
-  MPU6050.Accel.Y = (((uint16_t)buf[2] << 8) | buf[3]) - MPU6050.Accel_Offset.Y;
-  MPU6050.Accel.Z = (((uint16_t)buf[4] << 8) | buf[5]) - MPU6050.Accel_Offset.Z;
+  GWS_MPU6050.Accel.X = (((uint16_t)buf[0] << 8) | buf[1]) - GWS_MPU6050.Accel_Offset.X;
+  GWS_MPU6050.Accel.Y = (((uint16_t)buf[2] << 8) | buf[3]) - GWS_MPU6050.Accel_Offset.Y;
+  GWS_MPU6050.Accel.Z = (((uint16_t)buf[4] << 8) | buf[5]) - GWS_MPU6050.Accel_Offset.Z;
   return HAL_OK;
 }
 /**
@@ -145,21 +143,21 @@ HAL_StatusTypeDef MPU_Get_And_Filter(void) {
   static MPU6050_Kalman_Type kalman = {.X = {0.02, 0, 0, 0, 0.001, 0.543},
                                        .Y = {0.02, 0, 0, 0, 0.001, 0.543},
                                        .Z = {0.02, 0, 0, 0, 0.001, 0.543}};
-  GW_Kalman_V1(&kalman.X, (float)MPU6050.Accel.X);
-  MPU6050.Accel.X = (uint16_t)kalman.X.Out;
-  GW_Kalman_V1(&kalman.Y, (float)MPU6050.Accel.Y);
-  MPU6050.Accel.Y = (uint16_t)kalman.Y.Out;
-  GW_Kalman_V1(&kalman.Z, (float)MPU6050.Accel.Z);
-  MPU6050.Accel.Z = (uint16_t)kalman.Z.Out;
+  GW_Kalman_V1(&kalman.X, (float)GWS_MPU6050.Accel.X);
+  GWS_MPU6050.Accel.X = (uint16_t)kalman.X.Out;
+  GW_Kalman_V1(&kalman.Y, (float)GWS_MPU6050.Accel.Y);
+  GWS_MPU6050.Accel.Y = (uint16_t)kalman.Y.Out;
+  GW_Kalman_V1(&kalman.Z, (float)GWS_MPU6050.Accel.Z);
+  GWS_MPU6050.Accel.Z = (uint16_t)kalman.Z.Out;
   // 对角速度进行一阶低通滤波
   const float factor = 0.15f;
   static GW_Vector3i localGyro;
-  MPU6050.Gyro.X = localGyro.X =
-      localGyro.X * (1 - factor) + MPU6050.Gyro.X * factor;
-  MPU6050.Gyro.Y = localGyro.Y =
-      localGyro.Y * (1 - factor) + MPU6050.Gyro.Y * factor;
-  MPU6050.Gyro.Z = localGyro.Z =
-      localGyro.Z * (1 - factor) + MPU6050.Gyro.Z * factor;
+  GWS_MPU6050.Gyro.X = localGyro.X =
+      localGyro.X * (1 - factor) + GWS_MPU6050.Gyro.X * factor;
+  GWS_MPU6050.Gyro.Y = localGyro.Y =
+      localGyro.Y * (1 - factor) + GWS_MPU6050.Gyro.Y * factor;
+  GWS_MPU6050.Gyro.Z = localGyro.Z =
+      localGyro.Z * (1 - factor) + GWS_MPU6050.Gyro.Z * factor;
   return HAL_OK;
 }
 /**
@@ -170,21 +168,21 @@ HAL_StatusTypeDef MPU_Reset(void) {
   const int16_t MIN_GYRO_VALUE = -5;
   GW_Vector3i lastGyro = {0};
   GW_Vector3i erroGyro;
-  MPU6050.Accel_Offset.X = 0;
-  MPU6050.Accel_Offset.Y = 8192;
-  MPU6050.Accel_Offset.Z = 0;
-  MPU6050.Gyro_Offset.X = 0;
-  MPU6050.Gyro_Offset.Y = 0;
-  MPU6050.Gyro_Offset.Z = 0;
+  GWS_MPU6050.Accel_Offset.X = 0;
+  GWS_MPU6050.Accel_Offset.Y = 8192;
+  GWS_MPU6050.Accel_Offset.Z = 0;
+  GWS_MPU6050.Gyro_Offset.X = 0;
+  GWS_MPU6050.Gyro_Offset.Y = 0;
+  GWS_MPU6050.Gyro_Offset.Z = 0;
   int8_t times = 30;  // 读30次，看是否静止不动
   while (times--) {
     if (MPU_Get_And_Filter() != HAL_OK) {
       return HAL_ERROR;
     }
-    erroGyro.X = MPU6050.Gyro.X - lastGyro.X;
-    erroGyro.Y = MPU6050.Gyro.Y - lastGyro.Y;
-    erroGyro.Z = MPU6050.Gyro.Z - lastGyro.Z;
-    lastGyro = MPU6050.Gyro;
+    erroGyro.X = GWS_MPU6050.Gyro.X - lastGyro.X;
+    erroGyro.Y = GWS_MPU6050.Gyro.Y - lastGyro.Y;
+    erroGyro.Z = GWS_MPU6050.Gyro.Z - lastGyro.Z;
+    lastGyro = GWS_MPU6050.Gyro;
     if (erroGyro.X > MAX_GYRO_VALUE || erroGyro.X < MIN_GYRO_VALUE ||
         erroGyro.Y > MAX_GYRO_VALUE || erroGyro.Y < MIN_GYRO_VALUE ||
         erroGyro.Z > MAX_GYRO_VALUE || erroGyro.Z < MIN_GYRO_VALUE) {
@@ -200,18 +198,18 @@ HAL_StatusTypeDef MPU_Reset(void) {
     if (i < 100) {
       continue;
     }
-    buff[0] += MPU6050.Accel.X;
-    buff[1] += MPU6050.Accel.Y;
-    buff[2] += MPU6050.Accel.Z;
-    buff[3] += MPU6050.Gyro.X;
-    buff[4] += MPU6050.Gyro.Y;
-    buff[5] += MPU6050.Gyro.Z;
+    buff[0] += GWS_MPU6050.Accel.X;
+    buff[1] += GWS_MPU6050.Accel.Y;
+    buff[2] += GWS_MPU6050.Accel.Z;
+    buff[3] += GWS_MPU6050.Gyro.X;
+    buff[4] += GWS_MPU6050.Gyro.Y;
+    buff[5] += GWS_MPU6050.Gyro.Z;
   }
-  MPU6050.Accel_Offset.X = buff[0] >> 8;
-  MPU6050.Accel_Offset.Y = buff[1] >> 8;
-  MPU6050.Accel_Offset.Z = buff[2] >> 8;
-  MPU6050.Gyro_Offset.X = buff[3] >> 8;
-  MPU6050.Gyro_Offset.Y = buff[4] >> 8;
-  MPU6050.Gyro_Offset.Z = buff[5] >> 8;
+  GWS_MPU6050.Accel_Offset.X = buff[0] >> 8;
+  GWS_MPU6050.Accel_Offset.Y = buff[1] >> 8;
+  GWS_MPU6050.Accel_Offset.Z = buff[2] >> 8;
+  GWS_MPU6050.Gyro_Offset.X = buff[3] >> 8;
+  GWS_MPU6050.Gyro_Offset.Y = buff[4] >> 8;
+  GWS_MPU6050.Gyro_Offset.Z = buff[5] >> 8;
   return HAL_OK;
 }

@@ -8,6 +8,7 @@ extern "C" {
 #include "gwtypes.h"
 #include "kalman.h"
 #include "main.h"
+#include "state.h"
 
 #define MPU_AD0_CTRL PAout(15)     // AD0控制脚
 #define MPU_ACCEL_OFFS_REG 0x06    // 版本号
@@ -81,14 +82,12 @@ typedef struct {
 } MPU6050_Kalman_Type;
 
 typedef struct {
-  GW_Vector3i Gyro;             // 陀螺仪
-  GW_Vector3i Accel;            // 加速度计
-  GW_Vector3i Accel_Offset;     // 加速度计的偏移量
-  GW_Vector3i Gyro_Offset;      // 陀螺仪的偏移量
-  MPU6050_Kalman_Type Kalman;  // 卡尔曼滤波器
+  GW_Vector3i Gyro;            // 陀螺仪
+  GW_Vector3i Accel;           // 加速度计
+  GW_Vector3i Accel_Offset;    // 加速度计的偏移量
+  GW_Vector3i Gyro_Offset;     // 陀螺仪的偏移量
+  MPU6050_Kalman_Type Kalman;  // 卡尔曼滤波
 } MPU6050_State_Type;
-
-extern MPU6050_State_Type MPU6050;
 
 HAL_StatusTypeDef ICM20608_Init(void);
 HAL_StatusTypeDef MPU_Set_Gyro_Fsr(uint8_t config);

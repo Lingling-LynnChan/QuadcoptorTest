@@ -90,6 +90,7 @@ int main(void) {
   MX_GPIO_Init();
   MX_USART1_UART_Init();
   MX_TIM1_Init();
+  MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
   ICM20608_Init();
   /* USER CODE END 2 */
@@ -110,13 +111,15 @@ int main(void) {
     LED_ON(G);
     LED_OFF(B);
     mode = 0;
-    printf("OFFSET_ACCEL_X:%d, OFFSET_ACCEL_Y:%d, OFFSET_ACCEL_Z:%d\n", MPU6050.Accel_Offset.X,
-           MPU6050.Accel_Offset.Y, MPU6050.Accel_Offset.Z);
-    printf("OFFSET_GYRO_X:%d, OFFSET_GYRO_Y:%d, OFFSET_GYRO_Z:%d\n", MPU6050.Gyro_Offset.X,
-           MPU6050.Gyro_Offset.Y, MPU6050.Gyro_Offset.Z);
+    printf("OFFSET_ACCEL_X:%d, OFFSET_ACCEL_Y:%d, OFFSET_ACCEL_Z:%d\n",
+           GWS_MPU6050.Accel_Offset.X, GWS_MPU6050.Accel_Offset.Y,
+           GWS_MPU6050.Accel_Offset.Z);
+    printf("OFFSET_GYRO_X:%d, OFFSET_GYRO_Y:%d, OFFSET_GYRO_Z:%d\n",
+           GWS_MPU6050.Gyro_Offset.X, GWS_MPU6050.Gyro_Offset.Y, GWS_MPU6050.Gyro_Offset.Z);
   }
   while (1) {
     /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
     if (mode == 1) {
       LED_OFF(R);
@@ -134,10 +137,10 @@ int main(void) {
       LED_OFF(R);
       LED_ON(G);
       LED_OFF(B);
-      printf("ACCEL_X:%d, ACCEL_Y:%d, ACCEL_Z:%d\n", MPU6050.Accel.X,
-             MPU6050.Accel.Y, MPU6050.Accel.Z);
-      printf("GYRO_X:%d, GYRO_Y:%d, GYRO_Z:%d\n", MPU6050.Gyro.X,
-             MPU6050.Gyro.Y, MPU6050.Gyro.Z);
+      printf("ACCEL_X:%d, ACCEL_Y:%d, ACCEL_Z:%d\n", GWS_MPU6050.Accel.X,
+             GWS_MPU6050.Accel.Y, GWS_MPU6050.Accel.Z);
+      printf("GYRO_X:%d, GYRO_Y:%d, GYRO_Z:%d\n", GWS_MPU6050.Gyro.X,
+             GWS_MPU6050.Gyro.Y, GWS_MPU6050.Gyro.Z);
     }
     HAL_Delay(1000 / MPU6050_RATE_HZ);
   }
@@ -151,26 +154,21 @@ int main(void) {
 void SystemClock_Config(void) {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+
   /** Configure the main internal regulator output voltage
    */
   if (HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1) != HAL_OK) {
     Error_Handler();
   }
 
-  __HAL_RCC_PWR_CLK_ENABLE();  // 使能PWR时钟
-
   /** Initializes the RCC Oscillators according to the specified parameters
    * in the RCC_OscInitTypeDef structure.
    */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 1;
-  RCC_OscInitStruct.PLL.PLLN = 20;
-  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV7;
-  RCC_OscInitStruct.PLL.PLLQ = RCC_PLLQ_DIV2;
-  RCC_OscInitStruct.PLL.PLLR = RCC_PLLR_DIV2;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_MSI;
+  RCC_OscInitStruct.MSIState = RCC_MSI_ON;
+  RCC_OscInitStruct.MSICalibrationValue = 0;
+  RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_6;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
     Error_Handler();
   }
@@ -179,15 +177,12 @@ void SystemClock_Config(void) {
    */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK |
                                 RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_MSI;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK) {
-    Error_Handler();
-  }
-  if (HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1)) {
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK) {
     Error_Handler();
   }
 }

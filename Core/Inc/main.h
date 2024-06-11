@@ -72,10 +72,21 @@ void Error_Handler(void);
 #define I2C_SDA_Pin GPIO_PIN_1
 #define I2C_SDA_GPIO_Port GPIOC
 #define I2C_SDA_GPIO_ENABLE() __HAL_RCC_GPIOC_CLK_ENABLE()
-// MPU6050 配置
-#define MPU6050_GYRO_RANGE_CONFIG 3   // 陀螺仪量程2000dps
-#define MPU6050_ACCEL_RANGE_CONFIG 0  // 加速度计量程2g
-#define MPU6050_RATE_HZ 50            // 采样率50hz
+// GWS_MPU6050 配置
+#define MPU6050_GYRO_RANGE_CONFIG 3   // �?螺仪量程2000dps
+#define MPU6050_ACCEL_RANGE_CONFIG 0  // 加�?�度计量�?2g
+#define MPU6050_RATE_HZ 50            // 采样�?50hz
+
+#define MPU6050_GYRO_RANGE_CONFIG_GET_VALUE \
+  (MPU6050_GYRO_RANGE_CONFIG == 0)   ? 250  \
+  : (MPU6050_GYRO_RANGE_CONFIG == 1) ? 500  \
+  : (MPU6050_GYRO_RANGE_CONFIG == 2) ? 1000 \
+                                     : 2000
+#define MPU6050_ACCEL_RANGE_CONFIG_GET_VALUE \
+  (MPU6050_ACCEL_RANGE_CONFIG == 0)   ? 2    \
+  : (MPU6050_ACCEL_RANGE_CONFIG == 1) ? 4    \
+  : (MPU6050_ACCEL_RANGE_CONFIG == 2) ? 8    \
+                                      : 16
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+#include "icm20608.h"
+#include "imu.h"
 #include "main.h"
 
 // 解锁状态: 兼容ANOTC
@@ -23,6 +25,15 @@ typedef enum {
   GWS_FLY_MODE_LANDING = 0x20,      // 降落
   GWS_FLY_MODE_RETURN = 0x21        // 返航
 } GWS_Fly_Mode_Type;
+
+// 六轴传感器
+extern MPU6050_State_Type GWS_MPU6050;
+// 姿态角
+extern GW_IMU_Angle_Type GWS_IMU_Angle;
+// 飞行器锁状态
+extern GWS_Lock_State_Type GWS_Lock_State;
+// 飞行模式
+extern GWS_Fly_Mode_Type GWS_Fly_Mode;
 
 #ifdef __cplusplus
 }
