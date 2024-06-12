@@ -65,6 +65,7 @@ void GW_PID_Param_Init(void) {
               .Out_Limit_Low = 0,
           },
   };
+  GWS_PID = Def;
 }
 
 void GW_PID_Update(GW_PID_Type* pid, float dt) {

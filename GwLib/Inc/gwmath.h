@@ -21,6 +21,7 @@ float GWM_Arctan2(float y, float x);
 float GWM_Sin(float x);
 float GWM_Cos(float x);
 float GWM_RSqrt(float x);
+void GWM_Ftoiu(float f, int32_t* integer, uint32_t* decimal);
 
 #ifdef __cplusplus
 }

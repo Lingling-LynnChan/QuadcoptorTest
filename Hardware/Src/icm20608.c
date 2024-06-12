@@ -1,224 +1,172 @@
 #include "icm20608.h"
+#include "gwmath.h"
 #include "i2c.h"
+#include "inv_mpu.h"
+#include "inv_mpu_dmp_motion_driver.h"
 #include "string.h"
 
-// GLOBAL
-MPU6050_State_Type GWS_MPU6050 = {0};
-
+static int8_t GW_Inv_Matrix[9] = {
+    -1, 0,  0,  //
+    0,  -1, 0,  //
+    0,  0,  1,  //
+};
+static uint16_t GW_Inv_Orientation_Matrix_To_Scale(int8_t mtx[]);
+static int run_test(void);
 /**
  * @brief 初始化ICM20608
  */
 HAL_StatusTypeDef ICM20608_Init(void) {
-  HAL_StatusTypeDef state;
+  struct int_param_s int_param;
+  int err;
   GW_I2C_Init();
-  // 复位
-  state = GW_I2C_Write_Byte(MPU_ADDR, MPU_PWR_MGMT1_REG, 0x80);
-  if (state != HAL_OK) {
+  err = mpu_init(&int_param);
+  if (err) {
+    printf("mpu_init failed\n");
     return HAL_ERROR;
   }
-  HAL_Delay(100);
-  // 开机
-  state = GW_I2C_Write_Byte(MPU_ADDR, MPU_PWR_MGMT1_REG, 0x00);
-  if (state != HAL_OK) {
+  // 使能陀螺仪和加速度计
+  err = mpu_set_sensors(INV_XYZ_GYRO | INV_XYZ_ACCEL);
+  if (err) {
+    printf("mpu_set_sensors failed\n");
     return HAL_ERROR;
   }
-  // 配置
-  MPU_Set_Gyro_Fsr(MPU6050_GYRO_RANGE_CONFIG);           // 陀螺仪量程
-  MPU_Set_Accel_Fsr(MPU6050_ACCEL_RANGE_CONFIG);         // 加速度量程
-  MPU_Set_Rate(MPU6050_RATE_HZ);                         // 采样率
-  GW_I2C_Write_Byte(MPU_ADDR, MPU_INT_EN_REG, 0x00);     // 关闭所有中断
-  GW_I2C_Write_Byte(MPU_ADDR, MPU_USER_CTRL_REG, 0x00);  // I2C主模式关闭
-  GW_I2C_Write_Byte(MPU_ADDR, MPU_FIFO_EN_REG, 0x00);    // 关闭FIFO
-  GW_I2C_Write_Byte(MPU_ADDR, MPU_INTBP_CFG_REG, 0x80);  // INT引脚低电平有效
-  GW_I2C_Write_Byte(MPU_ADDR, 0x1D, 1);  // INT引脚低电平有效
-  uint8_t id = GW_I2C_Read_Byte(MPU_ADDR, MPU_DEVICE_ID_REG);
-  if (id != 0xAF) {  // 器件ID不正确
+  // 设置FIFO
+  err = mpu_configure_fifo(INV_XYZ_GYRO | INV_XYZ_ACCEL);
+  if (err) {
+    printf("mpu_configure_fifo failed\n");
     return HAL_ERROR;
   }
-  GW_I2C_Write_Byte(MPU_ADDR, MPU_PWR_MGMT1_REG, 0X01);  // 设置CLKSEL|PLL X轴
-  GW_I2C_Write_Byte(MPU_ADDR, MPU_PWR_MGMT2_REG, 0X00);  // 启用accel|gyro
-  MPU_Set_Rate(50);
+  // 设置采样率
+  err = mpu_set_sample_rate(MPU6050_RATE_HZ);
+  if (err) {
+    printf("mpu_set_sample_rate failed\n");
+    return HAL_ERROR;
+  }
+  // 加载DMP
+  err = dmp_load_motion_driver_firmware();
+  if (err) {
+    printf("dmp_load_motion_driver_firmware failed\n");
+    return HAL_ERROR;
+  }
+  // 设置陀螺仪方向
+  err = dmp_set_orientation(GW_Inv_Orientation_Matrix_To_Scale(GW_Inv_Matrix));
+  if (err) {
+    printf("dmp_set_orientation failed\n");
+    return HAL_ERROR;
+  }
+  // 使能DMP功能
+  err = dmp_enable_feature(         //
+      DMP_FEATURE_6X_LP_QUAT |      // 6轴低功耗四元数
+      DMP_FEATURE_TAP |             // 敲击检测
+      DMP_FEATURE_ANDROID_ORIENT |  // 朝向数据使用安卓标准
+      DMP_FEATURE_SEND_RAW_ACCEL |  // 发送原始加速度计数据
+      DMP_FEATURE_SEND_CAL_GYRO |   // 发送校准后的陀螺仪数据
+      DMP_FEATURE_GYRO_CAL          // 陀螺仪校准
+  );
+  if (err) {
+    printf("dmp_enable_feature failed\n");
+    return HAL_ERROR;
+  }
+  // 自检
+  err = run_test();
+  if (err) {
+    printf("run_test failed\n");
+    return HAL_ERROR;
+  }
+  // 使能DMP
+  err = mpu_set_dmp_state(1);
+  if (err) {
+    printf("mpu_set_dmp_state failed\n");
+    return HAL_ERROR;
+  }
+  printf("ICM20608 Init Success\n");
   return HAL_OK;
 }
 
-/**
- * @brief 设置ICM20608加速度传感器满量程范围
- * @param fsr 0:250dps,1:500dps,2:1000dps,3:2000dps
- */
-HAL_StatusTypeDef MPU_Set_Gyro_Fsr(uint8_t config) {
-  return GW_I2C_Write_Byte(MPU_ADDR, MPU_GYRO_CFG_REG, config << 3);
+HAL_StatusTypeDef ICM20608_Read(float* pitch, float* roll, float* yaw) {
+  int err;
+  const float Q30 = 1 << 30;
+  Quaternion NumQ = {
+      .Q0 = 1.f,
+      .Q1 = 0.f,
+      .Q2 = 0.f,
+      .Q3 = 0.f,
+  };
+  int16_t Gyro[3];
+  int16_t Accel[3];
+  int32_t Quat[4];
+  uint32_t Timestamp;
+  int16_t Sensors;
+  uint8_t more;
+  err = dmp_read_fifo(Gyro, Accel, (long*)&Quat, &Timestamp, &Sensors, &more);
+  if (err) {
+    printf("dmp_read_fifo failed\n");
+    return HAL_ERROR;
+  }
+  if (!(Sensors & INV_WXYZ_QUAT)) {
+    printf("INV_WXYZ_QUAT not found\n");
+    return HAL_ERROR;
+  }
+  NumQ.Q0 = Quat[0] / Q30;
+  NumQ.Q1 = Quat[1] / Q30;
+  NumQ.Q2 = Quat[2] / Q30;
+  NumQ.Q3 = Quat[3] / Q30;
+  *pitch = GWM_Arcsin(-2.f * (NumQ.Q1 * NumQ.Q3 + NumQ.Q0 * NumQ.Q2)) * 57.3f;
+  *roll = GWM_Arctan2(                                                   //
+              2.f * (NumQ.Q2 * NumQ.Q3 + NumQ.Q0 * NumQ.Q1),             //
+              -2.f * (GWM_Square(NumQ.Q1) + GWM_Square(NumQ.Q2)) + 1) *  //
+          57.3f;                                                         //
+  *yaw = GWM_Arctan2(                                                    //
+             2.f * (NumQ.Q1 * NumQ.Q2 + NumQ.Q0 * NumQ.Q3),              //
+             GWM_Square(NumQ.Q0) + GWM_Square(NumQ.Q1) -                 //
+                 GWM_Square(NumQ.Q2) - GWM_Square(NumQ.Q3)) *            //
+         57.3f;
+  return HAL_OK;
 }
-/**
- * @brief 设置ICM20608陀螺仪传感器满量程范围
- * @param fsr 0:2g,1:4g,2:8g,3:16g
- */
-HAL_StatusTypeDef MPU_Set_Accel_Fsr(uint8_t config) {
-  return GW_I2C_Write_Byte(MPU_ADDR, MPU_ACCEL_CFG_REG, config << 3);
-}
-/**
- * @brief 设置ICM20608的数字低通滤波器
- * @param lpf 数字低通滤波频率:Hz
- */
-HAL_StatusTypeDef MPU_Set_Lpf(uint16_t lpf) {
-  uint8_t data = 0;
-  if (lpf >= 188) {
-    data = 1;
-  } else if (lpf >= 98) {
-    data = 2;
-  } else if (lpf >= 42) {
-    data = 3;
-  } else if (lpf >= 20) {
-    data = 4;
-  } else if (lpf >= 10) {
-    data = 5;
+static uint16_t GW_Inv_Row_To_Scale(int8_t row[]) {
+  uint16_t b;
+  if (row[0] > 0) {
+    b = 0;
+  } else if (row[0] < 0) {
+    b = 4;
+  } else if (row[1] > 0) {
+    b = 1;
+  } else if (row[1] < 0) {
+    b = 5;
+  } else if (row[2] > 0) {
+    b = 2;
+  } else if (row[2] < 0) {
+    b = 6;
   } else {
-    data = 6;
+    b = 7;
   }
-  return GW_I2C_Write_Byte(MPU_ADDR, MPU_CFG_REG, data);
+  return b;
 }
-/**
- * @brief 设置ICM20608的采样率
- * @param rate 采样率: 4hz ... 1khz
- */
-HAL_StatusTypeDef MPU_Set_Rate(uint16_t rate) {
-  if (rate > 1000)
-    rate = 1000;
-  if (rate < 4)
-    rate = 4;
-  uint8_t data = 1000 / rate - 1;
-  data = GW_I2C_Write_Byte(MPU_ADDR, MPU_SAMPLE_RATE_REG, data);
-  data |= MPU_Set_Lpf(rate / 2);
-  return data;
+
+static uint16_t GW_Inv_Orientation_Matrix_To_Scale(int8_t mtx[]) {
+  uint16_t b = 0;
+  b |= (GW_Inv_Row_To_Scale(mtx + 0) << 0);
+  b |= (GW_Inv_Row_To_Scale(mtx + 3) << 3);
+  b |= (GW_Inv_Row_To_Scale(mtx + 6) << 6);
+  return b;
 }
-/**
- * @brief 获取温度
- */
-HAL_StatusTypeDef MPU_Get_Temp(float* temp) {
-  uint8_t buf[2];
-  if (GW_I2C_Read_Data(MPU_ADDR, MPU_TEMP_OUTH_REG, buf, 2) != HAL_OK) {
-    return HAL_ERROR;
+static int run_test(void) {
+  int32_t Gyro[3], Accel[3];
+  int result = mpu_run_self_test(Gyro, Accel);
+  if (result != 0x3) {
+    return -1;
   }
-  int16_t raw = (buf[0] << 8) | buf[1];
-  *temp = 36.53 + raw / 340.0f;
-  return HAL_OK;
-}
-/**
- * @brief 获取陀螺仪
- */
-HAL_StatusTypeDef MPU_Get_Gyro(void) {
-  uint8_t buf[6];
-  HAL_StatusTypeDef state =
-      GW_I2C_Read_Data(MPU_ADDR, MPU_GYRO_XOUTH_REG, buf, 6);
-  if (state != HAL_OK) {
-    return state;
-  }
-  GWS_MPU6050.Gyro.X =
-      (((uint16_t)buf[0] << 8) | buf[1]) - GWS_MPU6050.Gyro_Offset.X;
-  GWS_MPU6050.Gyro.Y =
-      (((uint16_t)buf[2] << 8) | buf[3]) - GWS_MPU6050.Gyro_Offset.Y;
-  GWS_MPU6050.Gyro.Z =
-      (((uint16_t)buf[4] << 8) | buf[5]) - GWS_MPU6050.Gyro_Offset.Z;
-  return HAL_OK;
-}
-/**
- * @brief 获取加速度
- */
-HAL_StatusTypeDef MPU_Get_Accel(void) {
-  uint8_t buf[6];
-  HAL_StatusTypeDef state =
-      GW_I2C_Read_Data(MPU_ADDR, MPU_ACCEL_XOUTH_REG, buf, 6);
-  if (state != HAL_OK) {
-    return state;
-  }
-  GWS_MPU6050.Accel.X =
-      (((uint16_t)buf[0] << 8) | buf[1]) - GWS_MPU6050.Accel_Offset.X;
-  GWS_MPU6050.Accel.Y =
-      (((uint16_t)buf[2] << 8) | buf[3]) - GWS_MPU6050.Accel_Offset.Y;
-  GWS_MPU6050.Accel.Z =
-      (((uint16_t)buf[4] << 8) | buf[5]) - GWS_MPU6050.Accel_Offset.Z;
-  return HAL_OK;
-}
-/**
- * @brief 获取数据并进行滤波
- */
-HAL_StatusTypeDef MPU_Get_And_Filter(void) {
-  HAL_StatusTypeDef state = HAL_OK;
-  state |= MPU_Get_Accel();  // 加速度
-  state |= MPU_Get_Gyro();   // 角速度
-  if (state != HAL_OK) {
-    return HAL_ERROR;
-  }
-  // 对加速度进行卡尔曼滤波
-  static MPU6050_Kalman_Type kalman = {.X = {0.02, 0, 0, 0, 0.001, 0.543},
-                                       .Y = {0.02, 0, 0, 0, 0.001, 0.543},
-                                       .Z = {0.02, 0, 0, 0, 0.001, 0.543}};
-  GW_Kalman_V1(&kalman.X, (float)GWS_MPU6050.Accel.X);
-  GWS_MPU6050.Accel.X = (uint16_t)kalman.X.Out;
-  GW_Kalman_V1(&kalman.Y, (float)GWS_MPU6050.Accel.Y);
-  GWS_MPU6050.Accel.Y = (uint16_t)kalman.Y.Out;
-  GW_Kalman_V1(&kalman.Z, (float)GWS_MPU6050.Accel.Z);
-  GWS_MPU6050.Accel.Z = (uint16_t)kalman.Z.Out;
-  // 对角速度进行一阶低通滤波
-  const float factor = 0.15f;
-  static GW_Vector3i localGyro;
-  GWS_MPU6050.Gyro.X = localGyro.X =
-      localGyro.X * (1 - factor) + GWS_MPU6050.Gyro.X * factor;
-  GWS_MPU6050.Gyro.Y = localGyro.Y =
-      localGyro.Y * (1 - factor) + GWS_MPU6050.Gyro.Y * factor;
-  GWS_MPU6050.Gyro.Z = localGyro.Z =
-      localGyro.Z * (1 - factor) + GWS_MPU6050.Gyro.Z * factor;
-  return HAL_OK;
-}
-/**
- * @brief 重置ICM20608
- */
-HAL_StatusTypeDef MPU_Reset(void) {
-  const int16_t MAX_GYRO_VALUE = 5;
-  const int16_t MIN_GYRO_VALUE = -5;
-  GW_Vector3i lastGyro = {0};
-  GW_Vector3i erroGyro;
-  GWS_MPU6050.Accel_Offset.X = 0;
-  GWS_MPU6050.Accel_Offset.Y = 8192;
-  GWS_MPU6050.Accel_Offset.Z = 0;
-  GWS_MPU6050.Gyro_Offset.X = 0;
-  GWS_MPU6050.Gyro_Offset.Y = 0;
-  GWS_MPU6050.Gyro_Offset.Z = 0;
-  int8_t times = 30;  // 读30次，看是否静止不动
-  while (times--) {
-    if (MPU_Get_And_Filter() != HAL_OK) {
-      return HAL_ERROR;
-    }
-    erroGyro.X = GWS_MPU6050.Gyro.X - lastGyro.X;
-    erroGyro.Y = GWS_MPU6050.Gyro.Y - lastGyro.Y;
-    erroGyro.Z = GWS_MPU6050.Gyro.Z - lastGyro.Z;
-    lastGyro = GWS_MPU6050.Gyro;
-    if (erroGyro.X > MAX_GYRO_VALUE || erroGyro.X < MIN_GYRO_VALUE ||
-        erroGyro.Y > MAX_GYRO_VALUE || erroGyro.Y < MIN_GYRO_VALUE ||
-        erroGyro.Z > MAX_GYRO_VALUE || erroGyro.Z < MIN_GYRO_VALUE) {
-      times = 30;
-      printf("erro=%3d|%3d|%3d, retiming\n", erroGyro.X, erroGyro.Y,
-             erroGyro.Z);
-    }
-    HAL_Delay(10);
-  }
-  uint32_t buff[6] = {0};
-  for (int16_t i = 0; i < 356; i++) {
-    MPU_Get_And_Filter();
-    if (i < 100) {
-      continue;
-    }
-    buff[0] += GWS_MPU6050.Accel.X;
-    buff[1] += GWS_MPU6050.Accel.Y;
-    buff[2] += GWS_MPU6050.Accel.Z;
-    buff[3] += GWS_MPU6050.Gyro.X;
-    buff[4] += GWS_MPU6050.Gyro.Y;
-    buff[5] += GWS_MPU6050.Gyro.Z;
-  }
-  GWS_MPU6050.Accel_Offset.X = buff[0] >> 8;
-  GWS_MPU6050.Accel_Offset.Y = buff[1] >> 8;
-  GWS_MPU6050.Accel_Offset.Z = buff[2] >> 8;
-  GWS_MPU6050.Gyro_Offset.X = buff[3] >> 8;
-  GWS_MPU6050.Gyro_Offset.Y = buff[4] >> 8;
-  GWS_MPU6050.Gyro_Offset.Z = buff[5] >> 8;
-  return HAL_OK;
+  float Gyro_Sens;
+  mpu_get_gyro_sens(&Gyro_Sens);
+  Gyro[0] = (int32_t)(Gyro[0] * Gyro_Sens);
+  Gyro[1] = (int32_t)(Gyro[1] * Gyro_Sens);
+  Gyro[2] = (int32_t)(Gyro[2] * Gyro_Sens);
+  dmp_set_gyro_bias(Gyro);
+  uint16_t Accel_Sens;
+  mpu_get_accel_sens(&Accel_Sens);
+  Accel[0] *= Accel_Sens;
+  Accel[1] *= Accel_Sens;
+  Accel[2] *= Accel_Sens;
+  dmp_set_accel_bias(Accel);
+  return 0;
 }

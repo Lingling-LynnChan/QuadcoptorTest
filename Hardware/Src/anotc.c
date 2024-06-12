@@ -151,28 +151,28 @@ void ANOTC_Send(ANOTC_Msg_Type type) {
       // len = 20;
       break;
     case ANOTC_SENSER:
-      MPU_Get_And_Filter();
-      ANOTC_Buffer[2] = GWS_MPU6050.Accel.X;
-      ANOTC_Buffer[3] = GWS_MPU6050.Accel.Y;
-      ANOTC_Buffer[4] = GWS_MPU6050.Accel.Z;
-      ANOTC_Buffer[5] = GWS_MPU6050.Gyro.X;
-      ANOTC_Buffer[6] = GWS_MPU6050.Gyro.Y;
-      ANOTC_Buffer[7] = GWS_MPU6050.Gyro.Z;
-      ANOTC_Buffer[8] = 0;   // 磁力计X
-      ANOTC_Buffer[9] = 0;   // 磁力计Y
-      ANOTC_Buffer[10] = 0;  // 磁力计Z
-      len = 18;
+      // ICM20608_Read();
+      // ANOTC_Buffer[2] = GWS_MPU6050.Accel.X;
+      // ANOTC_Buffer[3] = GWS_MPU6050.Accel.Y;
+      // ANOTC_Buffer[4] = GWS_MPU6050.Accel.Z;
+      // ANOTC_Buffer[5] = GWS_MPU6050.Gyro.X;
+      // ANOTC_Buffer[6] = GWS_MPU6050.Gyro.Y;
+      // ANOTC_Buffer[7] = GWS_MPU6050.Gyro.Z;
+      // ANOTC_Buffer[8] = 0;   // 磁力计X
+      // ANOTC_Buffer[9] = 0;   // 磁力计Y
+      // ANOTC_Buffer[10] = 0;  // 磁力计Z
+      // len = 18;
       break;
     case ANOTC_SENSER2:
       break;
     case ANOTC_STATUS:
-      ANOTC_Buffer[2] = (int16_t)(GWS_IMU_Angle.Roll * 100);
-      ANOTC_Buffer[3] = (int16_t)(GWS_IMU_Angle.Pitch * 100);
-      ANOTC_Buffer[4] = -(int16_t)(GWS_IMU_Angle.Yaw * 100);
-      ((int32_t*)&ANOTC_Buffer[5])[0] = 0;  // 高度数据
-      ((uint8_t*)&ANOTC_Buffer[7])[0] = GWS_Remote.GWS_Fly_Mode;  // 飞行模式
-      ((uint8_t*)&ANOTC_Buffer[7])[1] = GWS_Lock;  // 解锁信息
-      len = 12;
+      // ANOTC_Buffer[2] = (int16_t)(GWS_IMU_Angle.Roll * 100);
+      // ANOTC_Buffer[3] = (int16_t)(GWS_IMU_Angle.Pitch * 100);
+      // ANOTC_Buffer[4] = -(int16_t)(GWS_IMU_Angle.Yaw * 100);
+      // ((int32_t*)&ANOTC_Buffer[5])[0] = 0;  // 高度数据
+      // ((uint8_t*)&ANOTC_Buffer[7])[0] = GWS_Remote.GWS_Fly_Mode;  // 飞行模式
+      // ((uint8_t*)&ANOTC_Buffer[7])[1] = GWS_Lock;  // 解锁信息
+      // len = 12;
       break;
     case ANOTC_POWER:
       break;

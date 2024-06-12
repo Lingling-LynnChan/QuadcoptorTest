@@ -97,13 +97,6 @@ int main(void) {
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  printf("MPU6050 reset start...\n");
-  HAL_StatusTypeDef state = MPU_Reset();
-  if (state != HAL_OK) {
-    printf("MPU6050 reset failed\n");
-  } else {
-    printf("MPU6050 reset success\n");
-  }
   __HAL_TIM_CLEAR_IT(&htim3, TIM_IT_UPDATE);
   HAL_TIM_Base_Start_IT(&htim3);
   while (1) {

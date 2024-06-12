@@ -19,6 +19,13 @@ typedef struct {
   float Z;
 } GW_Vector3f;
 
+typedef struct {
+  float Q0;
+  float Q1;
+  float Q2;
+  float Q3;
+} Quaternion;
+
 #ifdef __cplusplus
 }
 #endif

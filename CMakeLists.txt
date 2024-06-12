@@ -53,6 +53,8 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     GwLib/Src/i2c.c
     GwLib/Src/kalman.c
     GwLib/Src/pid.c
+    Hardware/eMPL/Src/inv_mpu_dmp_motion_driver.c
+    Hardware/eMPL/Src/inv_mpu.c
     Hardware/Src/anotc.c
     Hardware/Src/icm20608.c
     Hardware/Src/imu.c
@@ -65,11 +67,15 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
     GwLib/Inc
     Hardware/Inc
+    Hardware/eMPL/Inc
 )
 
 # Add project symbols (macros)
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined symbols
+    __GW_USE_CMATH__
+    MPU6050
+    EMPL_TARGET_STM32
 )
 
 # Add linked libraries
