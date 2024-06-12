@@ -14,6 +14,14 @@ typedef struct {
   float Yaw;    // 偏航角
 } GW_IMU_Angle_Type;
 
+// 姿态角
+extern GW_IMU_Angle_Type GWS_IMU_Angle;
+
+extern const float IMU_RTA;
+extern const float IMU_ATR;
+extern const float IMU_GYRO_G;
+extern const float IMU_GYRO_GR;
+
 void IMU_Get_Angle(float dt);
 float IMU_Get_Norm_AccelZ(void);
 

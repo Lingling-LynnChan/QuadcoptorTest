@@ -1,0 +1,14 @@
+# CMake build directory
+build/
+
+# CMake generated files
+CMakeCache.txt
+Makefile
+
+# Compiled object files
+*.o
+*.obj
+
+# IDE specific files
+.vscode/
+.idea/

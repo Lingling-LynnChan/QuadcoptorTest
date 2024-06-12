@@ -89,6 +89,9 @@ typedef struct {
   MPU6050_Kalman_Type Kalman;  // 卡尔曼滤波
 } MPU6050_State_Type;
 
+// 六轴传感器
+extern MPU6050_State_Type GWS_MPU6050;
+
 HAL_StatusTypeDef ICM20608_Init(void);
 HAL_StatusTypeDef MPU_Set_Gyro_Fsr(uint8_t config);
 HAL_StatusTypeDef MPU_Set_Accel_Fsr(uint8_t config);

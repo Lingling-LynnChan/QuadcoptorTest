@@ -7,7 +7,9 @@ extern "C" {
 
 #include "main.h"
 
-void GW_Task_1ns(void);
+void GW_Task_1ms(void);
+void GW_Ctrl_Flight(float dt);
+void GW_Ctrl_Motor(void);
 
 #ifdef __cplusplus
 }

@@ -73,9 +73,9 @@ void Error_Handler(void);
 #define I2C_SDA_GPIO_Port GPIOC
 #define I2C_SDA_GPIO_ENABLE() __HAL_RCC_GPIOC_CLK_ENABLE()
 // GWS_MPU6050 配置
-#define MPU6050_GYRO_RANGE_CONFIG 3   // �?螺仪量程2000dps
-#define MPU6050_ACCEL_RANGE_CONFIG 0  // 加�?�度计量�?2g
-#define MPU6050_RATE_HZ 50            // 采样�?50hz
+#define MPU6050_GYRO_RANGE_CONFIG 3   // �?螺仪量程2000dps
+#define MPU6050_ACCEL_RANGE_CONFIG 0  // 加�?�度计量�??2g
+#define MPU6050_RATE_HZ 50            // 采样�?50hz
 
 #define MPU6050_GYRO_RANGE_CONFIG_GET_VALUE \
   (MPU6050_GYRO_RANGE_CONFIG == 0)   ? 250  \

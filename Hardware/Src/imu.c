@@ -3,6 +3,9 @@
 #include "gwtypes.h"
 #include "icm20608.h"
 
+// GLOBAL
+GW_IMU_Angle_Type GWS_IMU_Angle = {0};
+
 const float IMU_RTA = 57.2957795f;
 const float IMU_ATR = 0.0174532925f;
 const float IMU_GYRO_G =
@@ -37,7 +40,7 @@ void IMU_Get_Angle(float dt) {
   Gravity.Y = 2 * (NumQ.Q0 * NumQ.Q1 + NumQ.Q2 * NumQ.Q3);
   Gravity.Z = 1 - 2 * (NumQ.Q1 * NumQ.Q1 + NumQ.Q2 * NumQ.Q2);
   // 加速度归一化
-  NormQuat = GWM_RSqrt(              //
+  NormQuat = GWM_RSqrt(                  //
       GWM_Square(GWS_MPU6050.Accel.X) +  //
       GWM_Square(GWS_MPU6050.Accel.Y) +  //
       GWM_Square(GWS_MPU6050.Accel.Z));  //

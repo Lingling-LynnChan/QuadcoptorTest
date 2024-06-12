@@ -2,6 +2,9 @@
 #include "i2c.h"
 #include "string.h"
 
+// GLOBAL
+MPU6050_State_Type GWS_MPU6050 = {0};
+
 /**
  * @brief 初始化ICM20608
  */
@@ -109,9 +112,12 @@ HAL_StatusTypeDef MPU_Get_Gyro(void) {
   if (state != HAL_OK) {
     return state;
   }
-  GWS_MPU6050.Gyro.X = (((uint16_t)buf[0] << 8) | buf[1]) - GWS_MPU6050.Gyro_Offset.X;
-  GWS_MPU6050.Gyro.Y = (((uint16_t)buf[2] << 8) | buf[3]) - GWS_MPU6050.Gyro_Offset.Y;
-  GWS_MPU6050.Gyro.Z = (((uint16_t)buf[4] << 8) | buf[5]) - GWS_MPU6050.Gyro_Offset.Z;
+  GWS_MPU6050.Gyro.X =
+      (((uint16_t)buf[0] << 8) | buf[1]) - GWS_MPU6050.Gyro_Offset.X;
+  GWS_MPU6050.Gyro.Y =
+      (((uint16_t)buf[2] << 8) | buf[3]) - GWS_MPU6050.Gyro_Offset.Y;
+  GWS_MPU6050.Gyro.Z =
+      (((uint16_t)buf[4] << 8) | buf[5]) - GWS_MPU6050.Gyro_Offset.Z;
   return HAL_OK;
 }
 /**
@@ -124,9 +130,12 @@ HAL_StatusTypeDef MPU_Get_Accel(void) {
   if (state != HAL_OK) {
     return state;
   }
-  GWS_MPU6050.Accel.X = (((uint16_t)buf[0] << 8) | buf[1]) - GWS_MPU6050.Accel_Offset.X;
-  GWS_MPU6050.Accel.Y = (((uint16_t)buf[2] << 8) | buf[3]) - GWS_MPU6050.Accel_Offset.Y;
-  GWS_MPU6050.Accel.Z = (((uint16_t)buf[4] << 8) | buf[5]) - GWS_MPU6050.Accel_Offset.Z;
+  GWS_MPU6050.Accel.X =
+      (((uint16_t)buf[0] << 8) | buf[1]) - GWS_MPU6050.Accel_Offset.X;
+  GWS_MPU6050.Accel.Y =
+      (((uint16_t)buf[2] << 8) | buf[3]) - GWS_MPU6050.Accel_Offset.Y;
+  GWS_MPU6050.Accel.Z =
+      (((uint16_t)buf[4] << 8) | buf[5]) - GWS_MPU6050.Accel_Offset.Z;
   return HAL_OK;
 }
 /**
@@ -137,7 +146,7 @@ HAL_StatusTypeDef MPU_Get_And_Filter(void) {
   state |= MPU_Get_Accel();  // 加速度
   state |= MPU_Get_Gyro();   // 角速度
   if (state != HAL_OK) {
-    return HAL_ERROR;
+        return HAL_ERROR;
   }
   // 对加速度进行卡尔曼滤波
   static MPU6050_Kalman_Type kalman = {.X = {0.02, 0, 0, 0, 0.001, 0.543},

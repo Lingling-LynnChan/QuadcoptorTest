@@ -91,9 +91,9 @@ void ANOTC_Send(ANOTC_Msg_Type type) {
   uint8_t len = 2;
   int16_t ANOTC_Buffer[12];
   uint8_t* pt = (uint8_t*)(ANOTC_Buffer);
-  GW_PID_State_Type* PID_X = NULL;
-  GW_PID_State_Type* PID_Y = NULL;
-  GW_PID_State_Type* PID_Z = NULL;
+  GW_PID_Type* PID_X = NULL;
+  GW_PID_Type* PID_Y = NULL;
+  GW_PID_Type* PID_Z = NULL;
 
   switch (type) {
     case ANOTC_PID1:
@@ -169,9 +169,9 @@ void ANOTC_Send(ANOTC_Msg_Type type) {
       ANOTC_Buffer[2] = (int16_t)(GWS_IMU_Angle.Roll * 100);
       ANOTC_Buffer[3] = (int16_t)(GWS_IMU_Angle.Pitch * 100);
       ANOTC_Buffer[4] = -(int16_t)(GWS_IMU_Angle.Yaw * 100);
-      ((int32_t*)&ANOTC_Buffer[5])[0] = 0;                  // 高度数据
-      ((uint8_t*)&ANOTC_Buffer[7])[0] = GWS_FLY_MODE_NONE;  // 飞行模式
-      ((uint8_t*)&ANOTC_Buffer[7])[1] = GWS_FLY_LOCK;       // 解锁信息
+      ((int32_t*)&ANOTC_Buffer[5])[0] = 0;  // 高度数据
+      ((uint8_t*)&ANOTC_Buffer[7])[0] = GWS_Remote.GWS_Fly_Mode;  // 飞行模式
+      ((uint8_t*)&ANOTC_Buffer[7])[1] = GWS_Lock;  // 解锁信息
       len = 12;
       break;
     case ANOTC_POWER:

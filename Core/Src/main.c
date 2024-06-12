@@ -89,60 +89,27 @@ int main(void) {
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART1_UART_Init();
-  MX_TIM1_Init();
-  MX_TIM5_Init();
+  MX_TIM3_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
   ICM20608_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  uint8_t mode = 0;
-  HAL_StatusTypeDef state = HAL_OK;
-  state = MPU_Reset();
+  printf("MPU6050 reset start...\n");
+  HAL_StatusTypeDef state = MPU_Reset();
   if (state != HAL_OK) {
-    LED_ON(R);
-    LED_OFF(G);
-    LED_OFF(B);
-    mode = 1;
-    printf("error\n");
+    printf("MPU6050 reset failed\n");
   } else {
-    LED_OFF(R);
-    LED_ON(G);
-    LED_OFF(B);
-    mode = 0;
-    printf("OFFSET_ACCEL_X:%d, OFFSET_ACCEL_Y:%d, OFFSET_ACCEL_Z:%d\n",
-           GWS_MPU6050.Accel_Offset.X, GWS_MPU6050.Accel_Offset.Y,
-           GWS_MPU6050.Accel_Offset.Z);
-    printf("OFFSET_GYRO_X:%d, OFFSET_GYRO_Y:%d, OFFSET_GYRO_Z:%d\n",
-           GWS_MPU6050.Gyro_Offset.X, GWS_MPU6050.Gyro_Offset.Y, GWS_MPU6050.Gyro_Offset.Z);
+    printf("MPU6050 reset success\n");
   }
+  __HAL_TIM_CLEAR_IT(&htim3, TIM_IT_UPDATE);
+  HAL_TIM_Base_Start_IT(&htim3);
   while (1) {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    if (mode == 1) {
-      LED_OFF(R);
-      LED_OFF(G);
-      LED_TOGGLE(B);
-      HAL_Delay(1000);
-      continue;
-    }
-    state = MPU_Get_And_Filter();
-    if (state != HAL_OK) {
-      LED_ON(R);
-      LED_OFF(G);
-      LED_OFF(B);
-    } else {
-      LED_OFF(R);
-      LED_ON(G);
-      LED_OFF(B);
-      printf("ACCEL_X:%d, ACCEL_Y:%d, ACCEL_Z:%d\n", GWS_MPU6050.Accel.X,
-             GWS_MPU6050.Accel.Y, GWS_MPU6050.Accel.Z);
-      printf("GYRO_X:%d, GYRO_Y:%d, GYRO_Z:%d\n", GWS_MPU6050.Gyro.X,
-             GWS_MPU6050.Gyro.Y, GWS_MPU6050.Gyro.Z);
-    }
-    HAL_Delay(1000 / MPU6050_RATE_HZ);
   }
   /* USER CODE END 3 */
 }
@@ -164,10 +131,9 @@ void SystemClock_Config(void) {
   /** Initializes the RCC Oscillators according to the specified parameters
    * in the RCC_OscInitTypeDef structure.
    */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_MSI;
-  RCC_OscInitStruct.MSIState = RCC_MSI_ON;
-  RCC_OscInitStruct.MSICalibrationValue = 0;
-  RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_6;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
     Error_Handler();
@@ -177,8 +143,8 @@ void SystemClock_Config(void) {
    */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK |
                                 RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_MSI;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV2;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
