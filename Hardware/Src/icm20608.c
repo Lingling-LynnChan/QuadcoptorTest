@@ -23,8 +23,8 @@ HAL_StatusTypeDef ICM20608_Init(void) {
     return HAL_ERROR;
   }
   // 配置
-  MPU_Set_Gyro_Fsr(MPU6050_GYRO_RANGE_CONFIG);           // 加速度量程
-  MPU_Set_Accel_Fsr(MPU6050_ACCEL_RANGE_CONFIG);         // 陀螺仪量程
+  MPU_Set_Gyro_Fsr(MPU6050_GYRO_RANGE_CONFIG);           // 陀螺仪量程
+  MPU_Set_Accel_Fsr(MPU6050_ACCEL_RANGE_CONFIG);         // 加速度量程
   MPU_Set_Rate(MPU6050_RATE_HZ);                         // 采样率
   GW_I2C_Write_Byte(MPU_ADDR, MPU_INT_EN_REG, 0x00);     // 关闭所有中断
   GW_I2C_Write_Byte(MPU_ADDR, MPU_USER_CTRL_REG, 0x00);  // I2C主模式关闭
