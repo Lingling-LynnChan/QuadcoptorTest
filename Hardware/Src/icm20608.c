@@ -146,7 +146,7 @@ HAL_StatusTypeDef MPU_Get_And_Filter(void) {
   state |= MPU_Get_Accel();  // 加速度
   state |= MPU_Get_Gyro();   // 角速度
   if (state != HAL_OK) {
-        return HAL_ERROR;
+    return HAL_ERROR;
   }
   // 对加速度进行卡尔曼滤波
   static MPU6050_Kalman_Type kalman = {.X = {0.02, 0, 0, 0, 0.001, 0.543},
