@@ -53,4 +53,3 @@ void GW_Delay_Us(uint16_t us);
 #endif
 
 #endif /* __TIM_H__ */
-
